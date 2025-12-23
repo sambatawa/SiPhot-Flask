@@ -96,7 +96,6 @@ async function requestCameraPermission() {
         cameraStatusText.textContent = 'Kamera Aktif';
         cameraStatusText.style.color = '#4CAF50';
         ambil.disabled = false;
-        showSuccess('Kamera berhasil diaktifkan!');
         return true;
     } catch (error) {
         console.error('Error accessing camera:', error);
@@ -119,6 +118,9 @@ document.querySelectorAll('.frame-button').forEach(button => {
         });
         button.classList.add('aktif');
         selectedFrame = frameName;
+        if (cameraStatusText.textContent === 'Kamera Aktif') {
+            ambil.disabled = false;
+        }
         try {
             const response = await fetch('/select_frame', {
                 method: 'POST',
@@ -130,8 +132,6 @@ document.querySelectorAll('.frame-button').forEach(button => {
             const result = await response.json();
             if (!result.success) {
                 showError('Gagal memilih frame: ' + result.error);
-            } else {
-                showSuccess(`Frame ${frameName} dipilih!`);
             }
         } catch (error) {
             showError('Gagal memilih frame');
@@ -235,17 +235,25 @@ let selectedPhotos = [];
 function showPhotoGallery() {
     galeri.innerHTML = '';
     galeri.style.display = 'flex';
+    const canvas = document.getElementById('canvas');
+    canvas.style.display = 'block';
     capturedPhotos.forEach((photo, index) => {
         const img = document.createElement('img');
         img.src = 'data:image/jpeg;base64,' + photo.data;
         img.className = 'foto-preview';
         img.setAttribute('data-index', index);
         img.addEventListener('click', () => {
+            if (selectedPhotos.length >= 4 && !img.classList.contains('selected')) {
+                showError('Maksimal 4 foto yang bisa dipilih!');
+                return;
+            }
             img.classList.toggle('selected');
             updateSelectedPhotos();
+            updatePhotoInteractions();
         });
         galeri.appendChild(img);
     });
+    updatePhotoInteractions();
 }
 const simpan = document.getElementById('simpan');
 const unduh = document.getElementById('unduh');
@@ -259,6 +267,20 @@ function updateSelectedPhotos() {
     });
     simpan.disabled = selectedPhotos.length !== 4;
 }
+function updatePhotoInteractions() {
+    const photoPreviews = document.querySelectorAll('.foto-preview');
+    photoPreviews.forEach(img => {
+        if (selectedPhotos.length >= 4 && !img.classList.contains('selected')) {
+            img.style.pointerEvents = 'none';
+            img.style.opacity = '0.5';
+            img.style.cursor = 'not-allowed';
+        } else {
+            img.style.pointerEvents = 'auto';
+            img.style.opacity = '1';
+            img.style.cursor = 'pointer';
+        }
+    });
+}
 simpan.addEventListener('click', async () => {
     if (selectedPhotos.length !== 4) {
         showError('Pilih tepat 4 foto!');
@@ -271,10 +293,15 @@ simpan.addEventListener('click', async () => {
     hasil.width = frameW;
     hasil.height = frameH;
     hasilGabungan.clearRect(0, 0, hasil.width, hasil.height);
+    hasil.style.display = 'block';
     const positions = frameConfig[selectedFrame];
     let loadedCount = 0;
     selectedPhotos.forEach((photo, i) => {
         const pos = positions[i];
+        if (!pos) {
+            console.error(`Position for photo ${i} is undefined`);
+            return;
+        }
         const img = new Image();
         img.onload = () => {
             const x = pos.x;
@@ -323,6 +350,7 @@ async function createComposition() {
                 hasil.width = 800;
                 hasil.height = 600;
                 hasilGabungan.drawImage(img, 0, 0, 800, 600);
+                hasil.style.display = 'block';
                 unduh.disabled = false;
             };
             img.src = 'data:image/jpeg;base64,' + result.composition_data;
@@ -373,12 +401,15 @@ async function resetSession() {
             selectedPhotos = [];
             galeri.innerHTML = '';
             galeri.style.display = 'none';
+            const canvas = document.getElementById('canvas');
+            canvas.style.display = 'none';
             canvas.width = 800;
             canvas.height = 180;
             canvas2d.clearRect(0, 0, canvas.width, canvas.height);
             hasil.width = 290;
             hasil.height = 150;
             hasilGabungan.clearRect(0, 0, hasil.width, hasil.height);
+            hasil.style.display = 'none';
             simpan.disabled = true;
             unduh.disabled = true;
             showSuccess('Sesi berhasil direset!');
@@ -391,6 +422,10 @@ async function resetSession() {
     }
 }
 ambil.addEventListener('click', async () => {
+    if (!selectedFrame) {
+        showError('Kamu belum memilih frame!');
+        return;
+    }
     if (capturedPhotos.length >= 7) {
         showError('Sudah mengambil 7 foto! Pilih 4 foto terbaik.');
         return;

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="SiPhot - Aplikasi Photobooth Digital untuk Mengabadikan Momen Spesial"/>
-    <title>SiPhot - Photobooth</title>
+    <title>SiPhot</title>
     <link rel="stylesheet" href="/static/photobooth.css" />
     <link rel="icon" href="/assets/SiPhot.png" type="image/png" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
@@ -22,23 +22,17 @@
         </div>
       </div>
     </div>
-    <header class="header">
-      <nav class="nav">
-        <img src="/assets/SiPhot2.png" alt="SiPhot Logo" width="80" />
-        <p>Abadikan dirimu yuk!</p>
-      </nav>
-    </header>
     <main class="container">
       <section class="jepret">
         <div class="camera">
           <div class="video-container">
             <div id="camera-status-text" class="camera-status">Status Kamera</div>
-            <img id="video" src="/video_feed" alt="Video Feed" />
+            <img id="video" src="/video_feed" alt="Video Feed"/>
           </div>
           <div class="inputan">
             <div class="timer-section">
               <label for="timer" class="timer-label"><i class="fa-solid fa-clock"></i>Timer (detik)</label>
-              <input id="timer" type="number" min="0" max="30" placeholder="0" aria-describedby="timer-help"/>
+              <input id="timer" type="number" min="0" max="30" placeholder="5" value="5" aria-describedby="timer-help"/>
               <p id="timer-help">Masukkan waktu countdown foto (0-30)</p>
             </div>
             <div class="frame-section">
@@ -61,23 +55,26 @@
               </div>
             </div>
             <div id="countdown" class="countdown-text" aria-live="polite"></div>
-            <button id="ambil" class="capture-btn" disabled><i class="fa-solid fa-camera"></i><span>Ambil Foto</span></button>
+            <button id="ambil" class="capture-btn" disabled><i class="fa-solid fa-camera"></i><span>Cekrek</span></button>
           </div>
         </div>
         <div class="foto">
-          <h3 class="section-title"><i class="fa-solid fa-photo-film"></i>Preview Foto</h3>
-          <canvas id="canvas" width="800" height="180"></canvas>
+          <h3 class="section-title"><i class="fa-solid fa-photo-film"></i>Preview</h3>
+          <canvas id="canvas"></canvas>
           <div id="pilihanfoto" class="photo-gallery"></div>
-          <button id="simpan" class="select-btn" disabled><i class="fa-solid fa-check"></i>Pilih 4 Foto</button>
+          <button id="simpan" class="select-btn" disabled>Pilih 4 Foto</button>
         </div>
       </section>
       <section class="Hasil">
-        <h3 class="section-title"><i class="fa-solid fa-star"></i>Hasil Akhir</h3>
+        <h3 class="section-title"><i class="fa-solid fa-star"></i>Hasil</h3>
         <canvas id="hasil" width="290"></canvas>
-        <button id="unduh" class="download-btn" disabled><i class="fa-solid fa-download"></i>Download Foto</button>
-        <button class="reset-btn">Reset Sesi</button>
+        <button id="unduh" class="download-btn" disabled><i class="fa-solid fa-download"></i>Download</button>
+        <button class="reset-btn">Reset</button>
       </section>
     </main>
+    <div class="logo-fixed">
+      <img src="/assets/SiPhot2.png" alt="SiPhot Logo" width="80" />
+    </div>
     <script src="/static/photobooth.js"></script>
   </body>
 </html>
