@@ -40,4 +40,3 @@ Aplikasi photobooth digital yang menggabungkan web interface modern dengan kontr
 ### Exit
 
 ## Terima Kasih
-**Dibuat untuk sambatawa.com**
